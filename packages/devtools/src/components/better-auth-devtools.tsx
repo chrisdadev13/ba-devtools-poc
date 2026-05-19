@@ -4,6 +4,7 @@ import {
 	type CSSProperties,
 	type MouseEvent as ReactMouseEvent,
 	type ReactNode,
+	type RefObject,
 	useEffect,
 	useMemo,
 	useRef,
@@ -97,7 +98,9 @@ function writePreferences(preferences: Preferences) {
 	}
 }
 
-function constrainPanelDimensions(dimensions: PanelDimensions): PanelDimensions {
+function constrainPanelDimensions(
+	dimensions: PanelDimensions,
+): PanelDimensions {
 	if (typeof window === "undefined") {
 		return dimensions;
 	}
@@ -833,11 +836,11 @@ function ResizeHandle({
 }: {
 	direction: ResizeDirection;
 	draggingDirection: ResizeDirection | null;
-	panelRef: React.RefObject<HTMLDivElement | null>;
+	panelRef: RefObject<HTMLDivElement | null>;
 	setDraggingDirection: (direction: ResizeDirection | null) => void;
 	onResize: (panelSize: PanelDimensions) => void;
 }) {
-	function handleMouseDown(event: ReactMouseEvent<HTMLDivElement>) {
+	function handleMouseDown(event: ReactMouseEvent<HTMLButtonElement>) {
 		event.preventDefault();
 		event.stopPropagation();
 
@@ -845,10 +848,11 @@ function ResizeHandle({
 		if (!panel) {
 			return;
 		}
+		const activePanel = panel;
 
 		setDraggingDirection(direction);
 
-		const initialRect = panel.getBoundingClientRect();
+		const initialRect = activePanel.getBoundingClientRect();
 		const startX = event.clientX;
 		const startY = event.clientY;
 
@@ -862,11 +866,11 @@ function ResizeHandle({
 				initialRect,
 			);
 
-			panel.style.setProperty(
+			activePanel.style.setProperty(
 				"--ba-panel-current-width",
 				`${nextDimensions.width}px`,
 			);
-			panel.style.setProperty(
+			activePanel.style.setProperty(
 				"--ba-panel-current-height",
 				`${nextDimensions.height}px`,
 			);
@@ -892,7 +896,9 @@ function ResizeHandle({
 
 	return (
 		<>
-			<div
+			<button
+				type="button"
+				aria-label="Resize devtools panel"
 				className={cn(
 					styles.resizeHandle,
 					styles[`resizeHandle-${direction}`],
@@ -928,7 +934,8 @@ function getResizedDimensions(
 
 	return constrainPanelDimensions({
 		width: initialRect.width + (growsRight ? deltaX : growsLeft ? -deltaX : 0),
-		height: initialRect.height + (growsBottom ? deltaY : growsTop ? -deltaY : 0),
+		height:
+			initialRect.height + (growsBottom ? deltaY : growsTop ? -deltaY : 0),
 	});
 }
 

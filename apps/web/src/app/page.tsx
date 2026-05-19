@@ -1,49 +1,88 @@
-import Image from "next/image";
+import { auth } from "@better-auth-devtools/auth";
+import { headers } from "next/headers";
 
-export default function Home() {
+export default async function Home() {
+	const session = await auth.api.getSession({
+		headers: await headers(),
+	});
+
+	const primaryHref = session?.user ? "/dashboard" : "/auth";
+	const primaryLabel = session?.user ? "Dashboard" : "Login";
+
 	return (
-		<div className="flex flex-1 flex-col items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-			<main className="flex w-full max-w-3xl flex-1 flex-col items-center justify-between bg-white px-16 py-32 sm:items-start dark:bg-black">
-				<div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-					<h1 className="max-w-xs font-semibold text-3xl text-black leading-10 tracking-tight dark:text-zinc-50">
-						To get started, edit the page.tsx file.
-					</h1>
-					<p className="max-w-md text-lg text-zinc-600 leading-8 dark:text-zinc-400">
-						Looking for a starting point or more instructions? Head over to{" "}
+		<div className="flex flex-1 flex-col items-center bg-zinc-50 font-sans dark:bg-black">
+			<main className="flex w-full max-w-3xl flex-1 flex-col border-zinc-100 border-x bg-white px-6 py-8 sm:px-12 sm:py-10 dark:border-zinc-900 dark:bg-black">
+				<nav className="flex items-center justify-between gap-4 text-sm">
+					<div className="flex items-center gap-5 text-zinc-500 dark:text-zinc-400">
+						<span className="font-medium text-zinc-950 dark:text-zinc-50">
+							Home
+						</span>
 						<a
-							href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-							className="font-medium text-zinc-950 dark:text-zinc-50"
+							href="/dashboard"
+							className="transition-colors hover:text-zinc-950 dark:hover:text-zinc-50"
 						>
-							Templates
-						</a>{" "}
-						or the{" "}
-						<a
-							href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-							className="font-medium text-zinc-950 dark:text-zinc-50"
-						>
-							Learning
-						</a>{" "}
-						center.
+							Dashboard
+						</a>
+					</div>
+					<a
+						href="https://github.com/better-auth/better-auth"
+						className="rounded-full border border-black/8 px-3 py-1.5 font-medium text-xs text-zinc-700 transition-colors hover:bg-black/4 dark:border-white/[.145] dark:text-zinc-300 dark:hover:bg-white/10"
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						GitHub Repo
+					</a>
+				</nav>
+
+				<section className="mt-20 flex flex-col gap-4 sm:mt-28">
+					<p className="font-medium text-xs text-zinc-500 dark:text-zinc-400">
+						Better Auth Devtools
 					</p>
-				</div>
-				<div className="flex flex-col gap-4 font-medium text-base sm:flex-row">
-					<a
-						className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] md:w-39.5 dark:hover:bg-[#ccc]"
-						href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Deploy Now
-					</a>
-					<a
-						className="flex h-12 w-full items-center justify-center rounded-full border border-black/8 border-solid px-5 transition-colors hover:border-transparent hover:bg-black/4 md:w-39.5 dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-						href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						Documentation
-					</a>
-				</div>
+					<div className="space-y-3">
+						<h1 className="max-w-md font-semibold text-2xl text-black leading-8 tracking-tight dark:text-zinc-50">
+							Better Auth Devtools proof of concept.
+						</h1>
+						<p className="max-w-xl text-sm text-zinc-600 leading-7 dark:text-zinc-400">
+							This repo showcases a lightweight demo for exploring Better Auth
+							Devtools, validating auth flows, and making the integration story
+							easy to review. Learn more about{" "}
+							<a
+								href="https://www.better-auth.com"
+								className="font-medium text-zinc-950 dark:text-zinc-50"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								Better Auth
+							</a>{" "}
+							and browse the{" "}
+							<a
+								href="https://www.better-auth.com/docs"
+								className="font-medium text-zinc-950 dark:text-zinc-50"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								documentation
+							</a>
+							.
+						</p>
+					</div>
+					<div className="mt-8 flex flex-col gap-3 font-medium text-sm sm:flex-row">
+						<a
+							className="flex h-10 w-full items-center justify-center gap-2 rounded-full bg-foreground px-4 text-background transition-colors hover:bg-[#383838] sm:w-36 dark:hover:bg-[#ccc]"
+							href={primaryHref}
+						>
+							{primaryLabel}
+						</a>
+						<a
+							className="flex h-10 w-full items-center justify-center rounded-full border border-black/8 px-4 text-zinc-700 transition-colors hover:bg-black/4 sm:w-36 dark:border-white/[.145] dark:text-zinc-300 dark:hover:bg-white/10"
+							href="https://github.com/better-auth/better-auth"
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							GitHub Repo
+						</a>
+					</div>
+				</section>
 			</main>
 		</div>
 	);

@@ -169,16 +169,189 @@
 }
 
 .panel {
-	width: var(--ba-panel-width);
+	position: relative;
+	display: flex;
+	width: var(--ba-panel-current-width, var(--ba-panel-width));
+	height: var(--ba-panel-current-height, auto);
+	max-width: calc(100vw - 40px);
+	max-height: calc(100vh - 40px);
+	flex-direction: column;
+	overflow: visible;
 }
 
 .header {
 	display: flex;
+	flex: 0 0 auto;
 	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
 	border-bottom: 1px solid var(--ba-border);
 	padding: 8px 10px;
+}
+
+.panelBody {
+	min-height: 0;
+	flex: 1;
+	overflow: auto;
+	border-radius: 0 0 var(--ba-radius-xl) var(--ba-radius-xl);
+	background: var(--ba-bg);
+}
+
+.resizeHandle {
+	position: absolute;
+	z-index: 10;
+	border: 0;
+	appearance: none;
+	background: transparent;
+	padding: 0;
+}
+
+.resizeHandle-top,
+.resizeHandle-bottom {
+	left: 0;
+	width: 100%;
+	height: 18px;
+	cursor: ns-resize;
+}
+
+.resizeHandle-left,
+.resizeHandle-right {
+	top: 0;
+	width: 18px;
+	height: 100%;
+	cursor: ew-resize;
+}
+
+.resizeHandle-top {
+	top: -7px;
+}
+
+.resizeHandle-right {
+	right: -7px;
+}
+
+.resizeHandle-bottom {
+	bottom: -7px;
+}
+
+.resizeHandle-left {
+	left: -7px;
+}
+
+.resizeHandle-top-left,
+.resizeHandle-top-right,
+.resizeHandle-bottom-left,
+.resizeHandle-bottom-right {
+	width: 24px;
+	height: 24px;
+	z-index: 15;
+}
+
+.resizeHandle-top-left {
+	top: -6px;
+	left: -6px;
+	cursor: nwse-resize;
+}
+
+.resizeHandle-top-right {
+	top: -6px;
+	right: -6px;
+	cursor: nesw-resize;
+}
+
+.resizeHandle-bottom-left {
+	bottom: -6px;
+	left: -6px;
+	cursor: nesw-resize;
+}
+
+.resizeHandle-bottom-right {
+	right: -6px;
+	bottom: -6px;
+	cursor: nwse-resize;
+}
+
+.resizeLine {
+	position: absolute;
+	z-index: -1;
+	pointer-events: none;
+	border: 1px solid var(--ba-border-strong);
+	background: var(--ba-bg-subtle);
+	transition: transform 250ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.resizeLine-top,
+.resizeLine-bottom {
+	left: -1px;
+	width: calc(100% + 2px);
+	height: 16px;
+}
+
+.resizeLine-left,
+.resizeLine-right {
+	top: -1px;
+	width: 16px;
+	height: calc(100% + 2px);
+}
+
+.resizeLine-top {
+	top: -7px;
+	border-radius: var(--ba-radius-lg) var(--ba-radius-lg) 0 0;
+	transform: translateY(16px);
+}
+
+.resizeLine-right {
+	right: -7px;
+	border-radius: 0 var(--ba-radius-lg) var(--ba-radius-lg) 0;
+	transform: translateX(-16px);
+}
+
+.resizeLine-bottom {
+	bottom: -7px;
+	border-radius: 0 0 var(--ba-radius-lg) var(--ba-radius-lg);
+	transform: translateY(-16px);
+}
+
+.resizeLine-left {
+	left: -7px;
+	border-radius: var(--ba-radius-lg) 0 0 var(--ba-radius-lg);
+	transform: translateX(16px);
+}
+
+.resizeHandle-top:hover ~ .resizeLine-top,
+.resizeLine-top.resizeLineDragging {
+	transform: translateY(0);
+}
+
+.resizeHandle-right:hover ~ .resizeLine-right,
+.resizeLine-right.resizeLineDragging {
+	transform: translateX(0);
+}
+
+.resizeHandle-bottom:hover ~ .resizeLine-bottom,
+.resizeLine-bottom.resizeLineDragging {
+	transform: translateY(0);
+}
+
+.resizeHandle-left:hover ~ .resizeLine-left,
+.resizeLine-left.resizeLineDragging {
+	transform: translateX(0);
+}
+
+.resizeHandleNoHover.resizeHandle-top:hover ~ .resizeLine-top {
+	transform: translateY(16px);
+}
+
+.resizeHandleNoHover.resizeHandle-right:hover ~ .resizeLine-right {
+	transform: translateX(-16px);
+}
+
+.resizeHandleNoHover.resizeHandle-bottom:hover ~ .resizeLine-bottom {
+	transform: translateY(-16px);
+}
+
+.resizeHandleNoHover.resizeHandle-left:hover ~ .resizeLine-left {
+	transform: translateX(16px);
 }
 
 .titleGroup,
