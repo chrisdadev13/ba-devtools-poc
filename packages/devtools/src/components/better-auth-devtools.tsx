@@ -14,6 +14,7 @@ import { useClickOutside } from "../hooks/use-click-outside";
 import { useCopy } from "../hooks/use-copy";
 import type {
 	BetterAuthDevtoolsAuthClient,
+	BetterAuthDevtoolsLoginLinkConfig,
 	BetterAuthDevtoolsPanel,
 	BetterAuthDevtoolsPosition,
 	BetterAuthDevtoolsProps,
@@ -59,9 +60,32 @@ const DEFAULT_PANEL_SIZE: Record<BetterAuthDevtoolsSize, PanelDimensions> = {
 	large: { width: 460, height: 500 },
 };
 
+const SESSION_FIELD_ORDER = [
+	"expiresAt",
+	"createdAt",
+	"updatedAt",
+	"ipAddress",
+	"userAgent",
+	"userId",
+	"id",
+	"token",
+];
+
+const SESSION_FIELD_LABELS: Record<string, string> = {
+	createdAt: "Created",
+	expiresAt: "Expires",
+	id: "Session ID",
+	ipAddress: "IP address",
+	token: "Token",
+	updatedAt: "Updated",
+	userAgent: "User agent",
+	userId: "User ID",
+};
+
 type DevtoolsConfig = {
 	baseURL?: string;
 	emailAndPassword?: { enabled?: boolean };
+	loginLinks?: BetterAuthDevtoolsLoginLinkConfig[];
 	plugins?: string[];
 	tables?: string[];
 };
@@ -185,12 +209,70 @@ function getSessionObject(
 	return maybeSession.session ?? null;
 }
 
+function formatDateTime(value: Date) {
+	return new Intl.DateTimeFormat(undefined, {
+		dateStyle: "medium",
+		timeStyle: "short",
+	}).format(value);
+}
+
 function formatValue(value: unknown) {
 	if (value === null || value === undefined || value === "") {
 		return "-";
 	}
 
+	if (value instanceof Date) {
+		return formatDateTime(value);
+	}
+
+	if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
+		const date = new Date(value);
+		if (!Number.isNaN(date.getTime())) {
+			return formatDateTime(date);
+		}
+	}
+
 	return String(value);
+}
+
+function getSessionRows(sessionObject: Record<string, unknown>) {
+	return Object.entries(sessionObject).sort(([leftKey], [rightKey]) => {
+		const leftIndex = SESSION_FIELD_ORDER.indexOf(leftKey);
+		const rightIndex = SESSION_FIELD_ORDER.indexOf(rightKey);
+
+		if (leftIndex === -1 && rightIndex === -1) {
+			return leftKey.localeCompare(rightKey);
+		}
+
+		if (leftIndex === -1) {
+			return 1;
+		}
+
+		if (rightIndex === -1) {
+			return -1;
+		}
+
+		return leftIndex - rightIndex;
+	});
+}
+
+function getSessionFieldLabel(key: string) {
+	return (
+		SESSION_FIELD_LABELS[key] ??
+		key
+			.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+			.replace(/^./, (value) => value.toUpperCase())
+	);
+}
+
+function isSessionFieldMono(key: string) {
+	const normalizedKey = key.toLowerCase();
+	return (
+		normalizedKey === "id" ||
+		normalizedKey.endsWith("id") ||
+		normalizedKey.includes("token") ||
+		normalizedKey === "ipaddress"
+	);
 }
 
 async function fetchDevtools<T>(
@@ -203,6 +285,19 @@ async function fetchDevtools<T>(
 	}
 
 	return unwrapFetch<T>(await auth.$fetch(path, options));
+}
+
+function getLoginLinkUrl(baseURL: string | undefined, key: string) {
+	const base = baseURL?.replace(/\/$/, "") ?? "";
+	const url = new URL(
+		`${base}/better-auth-devtools/login-link`,
+		window.location.href,
+	);
+	const callbackURL = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+	url.searchParams.set("key", key);
+	url.searchParams.set("callbackURL", callbackURL);
+	return url.toString();
 }
 
 export function BetterAuthDevtools({
@@ -228,6 +323,10 @@ export function BetterAuthDevtools({
 	const [usersLoading, setUsersLoading] = useState(false);
 	const [usersError, setUsersError] = useState<string | null>(null);
 	const [signingInUserId, setSigningInUserId] = useState<string | null>(null);
+	const [signingInLoginLinkKey, setSigningInLoginLinkKey] = useState<
+		string | null
+	>(null);
+	const [loginLinksError, setLoginLinksError] = useState<string | null>(null);
 	const [config, setConfig] = useState<DevtoolsConfig | null>(null);
 	const [configError, setConfigError] = useState<string | null>(null);
 	const { copied, copy } = useCopy();
@@ -248,6 +347,7 @@ export function BetterAuthDevtools({
 	);
 
 	const sessionJson = JSON.stringify(session.data ?? null, null, 2);
+	const loginLinks = config?.loginLinks ?? [];
 
 	useEffect(() => {
 		const stored = readPreferences({
@@ -311,6 +411,40 @@ export function BetterAuthDevtools({
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	}, [panel]);
+
+	useEffect(() => {
+		if (!open || config || configError) {
+			return;
+		}
+
+		let cancelled = false;
+		async function loadConfig() {
+			try {
+				const response = await fetchDevtools<DevtoolsConfig>(
+					auth,
+					"/better-auth-devtools/config",
+					{
+						method: "GET",
+					},
+				);
+				if (!cancelled) {
+					setConfig(response);
+					setConfigError(null);
+				}
+			} catch (error) {
+				if (!cancelled) {
+					setConfigError(
+						error instanceof Error ? error.message : "Failed to load config.",
+					);
+				}
+			}
+		}
+
+		loadConfig();
+		return () => {
+			cancelled = true;
+		};
+	}, [auth, open, config, configError]);
 
 	useEffect(() => {
 		if (panel !== "users") {
@@ -425,6 +559,26 @@ export function BetterAuthDevtools({
 		}
 	}
 
+	async function signInWithLoginLink(key: string) {
+		setSigningInLoginLinkKey(key);
+		setLoginLinksError(null);
+		try {
+			await fetchDevtools(auth, "/better-auth-devtools/login-link/sign-in", {
+				method: "POST",
+				body: { key },
+			});
+			auth.$store?.notify?.("$sessionSignal");
+			await session.refetch?.();
+			setPanel(null);
+		} catch (error) {
+			setLoginLinksError(
+				error instanceof Error ? error.message : "Failed to sign in.",
+			);
+		} finally {
+			setSigningInLoginLinkKey(null);
+		}
+	}
+
 	function hideForSession() {
 		window.sessionStorage.setItem(SESSION_HIDE_KEY, "true");
 		setHidden(true);
@@ -446,6 +600,7 @@ export function BetterAuthDevtools({
 				.includes(normalizedQuery),
 		);
 	});
+	const sessionRows = sessionObject ? getSessionRows(sessionObject) : [];
 
 	return (
 		<div
@@ -492,6 +647,12 @@ export function BetterAuthDevtools({
 								onClick={() => setPanel("session")}
 							/>
 						) : null}
+						{loginLinks.length ? (
+							<MenuItem
+								label="Login Links"
+								onClick={() => setPanel("login-links")}
+							/>
+						) : null}
 						<MenuItem label="Users" onClick={() => setPanel("users")} />
 						<MenuItem label="Config" onClick={() => setPanel("config")} />
 						{status === "error" ? (
@@ -536,11 +697,14 @@ export function BetterAuthDevtools({
 						/>
 					</Section>
 					<Section title="Session">
-						{sessionObject
-							? Object.entries(sessionObject).map(([key, value]) => (
-									<KV key={key} k={key} v={formatValue(value)} mono />
-								))
-							: null}
+						{sessionRows.map(([key, value]) => (
+							<KV
+								key={key}
+								k={getSessionFieldLabel(key)}
+								v={value}
+								mono={isSessionFieldMono(key)}
+							/>
+						))}
 					</Section>
 					<Section title="Actions">
 						<div className={styles.panelActions}>
@@ -637,6 +801,78 @@ export function BetterAuthDevtools({
 							Showing {users.length} of {usersTotal} users.
 						</div>
 					) : null}
+				</Panel>
+			) : null}
+
+			{open && panel === "login-links" ? (
+				<Panel
+					title="Login Links"
+					position={position}
+					size={size}
+					panelSize={panelSize}
+					onResize={setPanelSize}
+					onBack={() => setPanel(null)}
+					onClose={() => setOpen(false)}
+				>
+					{loginLinksError ? (
+						<div className={styles.emptyState}>{loginLinksError}</div>
+					) : null}
+					{loginLinks.length ? (
+						<div className={styles.userList}>
+							{loginLinks.map((link) => {
+								const isCurrent = Boolean(
+									(link.userId && link.userId === currentUser?.id) ||
+										(link.email &&
+											link.email.toLowerCase() ===
+												currentUser?.email?.toLowerCase()),
+								);
+
+								return (
+									<div className={styles.userRow} key={link.key}>
+										<div className={styles.userMain}>
+											<div className={styles.userEmail}>
+												<span className={styles.truncate}>{link.label}</span>
+												{isCurrent ? (
+													<span className={styles.badge}>current</span>
+												) : null}
+											</div>
+											<div className={styles.userMeta}>
+												{link.email ?? link.userId}
+												{link.createIfMissing ? " · creates if missing" : ""}
+											</div>
+										</div>
+										<div className={styles.rowActions}>
+											<Button
+												disabled={isCurrent || signingInLoginLinkKey !== null}
+												onClick={() => signInWithLoginLink(link.key)}
+											>
+												{signingInLoginLinkKey === link.key
+													? "Signing in..."
+													: "Sign in"}
+											</Button>
+											<Button
+												onClick={() =>
+													copy(
+														`login-link:${link.key}`,
+														getLoginLinkUrl(config?.baseURL, link.key),
+													)
+												}
+											>
+												{copied === `login-link:${link.key}` ? (
+													<CheckIcon />
+												) : (
+													<CopyIcon />
+												)}
+												Copy
+											</Button>
+										</div>
+									</div>
+								);
+							})}
+						</div>
+					) : (
+						<div className={styles.emptyState}>No login links configured.</div>
+					)}
 				</Panel>
 			) : null}
 
@@ -1016,11 +1252,13 @@ function Section({ title, children }: { title?: string; children: ReactNode }) {
 }
 
 function KV({ k, v, mono }: { k: string; v: unknown; mono?: boolean }) {
+	const value = formatValue(v);
+
 	return (
 		<div className={styles.kvRow}>
 			<span className={styles.key}>{k}</span>
-			<span className={cn(styles.kvValue, mono && styles.mono)}>
-				{formatValue(v)}
+			<span className={cn(styles.kvValue, mono && styles.mono)} title={value}>
+				{value}
 			</span>
 		</div>
 	);

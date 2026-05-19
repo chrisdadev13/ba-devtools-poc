@@ -414,9 +414,18 @@
 .prefRow,
 .menuItem {
 	display: flex;
-	align-items: center;
 	justify-content: space-between;
 	gap: 12px;
+}
+
+.infoRow,
+.prefRow,
+.menuItem {
+	align-items: center;
+}
+
+.kvRow {
+	align-items: flex-start;
 }
 
 .infoRow,
@@ -430,13 +439,30 @@
 	color: var(--ba-muted);
 }
 
-.value,
-.kvValue {
+.key {
+	flex: 0 0 96px;
+	font-size: 11px;
+	line-height: 1.45;
+}
+
+.value {
 	min-width: 0;
 	overflow: hidden;
 	text-align: right;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.kvValue {
+	display: -webkit-box;
+	min-width: 0;
+	flex: 1;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 3;
+	overflow: hidden;
+	line-height: 1.45;
+	overflow-wrap: anywhere;
+	text-align: left;
 }
 
 .menuItem {
@@ -581,6 +607,13 @@
 .userMain {
 	min-width: 0;
 	flex: 1;
+}
+
+.rowActions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: 6px;
 }
 
 .userEmail {

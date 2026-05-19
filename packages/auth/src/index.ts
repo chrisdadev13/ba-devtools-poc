@@ -21,7 +21,26 @@ export function createAuth() {
 		},
 		secret: env.BETTER_AUTH_SECRET,
 		baseURL: env.BETTER_AUTH_URL,
-		plugins: [betterAuthDevtools(), nextCookies()],
+		plugins: [
+			betterAuthDevtools({
+				loginLinks: [
+					{
+						key: "admin",
+						label: "Admin",
+						email: "admin@example.com",
+						name: "Admin",
+						createIfMissing: true,
+					},
+					{
+						key: "user",
+						label: "Regular User",
+						email: "user@example.com",
+						createIfMissing: true,
+					},
+				],
+			}),
+			nextCookies(),
+		],
 	});
 }
 

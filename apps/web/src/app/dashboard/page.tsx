@@ -15,7 +15,7 @@ export default async function DashboardPage() {
 	});
 
 	if (!session?.user) {
-		redirect("/auth");
+		redirect("/");
 	}
 
 	const displayName =

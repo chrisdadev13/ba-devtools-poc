@@ -6,6 +6,7 @@ export type BetterAuthDevtoolsStatus =
 export type BetterAuthDevtoolsPanel =
 	| "session"
 	| "users"
+	| "login-links"
 	| "config"
 	| "prefs"
 	| "diagnostics"
@@ -17,6 +18,32 @@ export type BetterAuthDevtoolsPosition =
 	| "top-right";
 export type BetterAuthDevtoolsSize = "small" | "medium" | "large";
 export type BetterAuthDevtoolsTheme = "system" | "light" | "dark";
+
+export type BetterAuthDevtoolsLoginLink = {
+	key?: string;
+	label: string;
+	name?: string;
+	image?: string | null;
+	emailVerified?: boolean;
+	createIfMissing?: boolean;
+} & (
+	| {
+			userId: string;
+			email?: string;
+	  }
+	| {
+			email: string;
+			userId?: string;
+	  }
+);
+
+export type BetterAuthDevtoolsLoginLinkConfig = {
+	key: string;
+	label: string;
+	email?: string;
+	userId?: string;
+	createIfMissing?: boolean;
+};
 
 export type BetterAuthDevtoolsUser = {
 	id: string;
