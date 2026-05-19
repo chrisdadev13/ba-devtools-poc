@@ -1,0 +1,65 @@
+apps/web/src/app/dashboard/page.tsx
+  s_9494cce20c9f5f::t_9d887ecf671796 5-10,21-35,37,39-52,54-60,65,69,71-72,74-80,85-87,89-90,92-95,97-101,104-105,107-109,111,116-122
+  s_9494cce20c9f5f::t_97b7179aa324b9 84,103
+  s_9494cce20c9f5f::t_0a8f64d4f7961f 38,53,61-64,66-68,70,73,81-83,88,91,96,102,106,110,115
+  s_9494cce20c9f5f::t_00f13e552324a3 112-114
+  s_a4edaf1631a7cf::t_8e173937c1b086 18
+packages/devtools/src/components/better-auth-devtools.module.css
+  s_d076240e9e3526::t_1b04fc9162e9a6 203-204,206
+  s_d076240e9e3526::t_870304e0b89240 172-179,184,192-202,205,207-354
+packages/devtools/src/components/better-auth-devtools.tsx
+  s_d076240e9e3526::t_c36f36a7ca244a 843
+  s_d076240e9e3526::t_d4e17e63d8cb66 7,839
+  s_d076240e9e3526::t_4b4bd13289b6e5 101-103,937-938
+  s_d076240e9e3526::t_ffe5f8cf2e6a65 851,855,869,873
+  s_d076240e9e3526::t_e25254ae2999e4 899-901
+apps/web/src/app/page.tsx
+  s_9494cce20c9f5f::t_71691e4cf22afb 43-44,46-69,71-72,74-75,77-78,82,84-85
+  s_9494cce20c9f5f::t_7f211bedf42339 9
+  s_1296f4dc4218a2::t_3a5a4352c03d7c 70,73,76,79-81,83
+  s_a4edaf1631a7cf::t_3e34d46428881b 8
+  s_9494cce20c9f5f::t_0a8f64d4f7961f 13-19,21-22,24-26,28-29,33,35-42,45
+  s_a4edaf1631a7cf::t_3427a08743f0e5 1-7,10
+apps/web/src/components/user-menu.tsx
+  s_9494cce20c9f5f::t_7f211bedf42339 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "5614e0b070ccafe5f0e6e06e8bbdb5c1ffb95d27",
+  "prompts": {},
+  "sessions": {
+    "s_1296f4dc4218a2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1beb434faffeRHoV4nXCJ6LfQ6",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    },
+    "s_9494cce20c9f5f": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bea78371ffeLspjKMI8dPbp77",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    },
+    "s_a4edaf1631a7cf": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1beaa0c31ffeIWaydSlsxilcFO",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    },
+    "s_d076240e9e3526": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1beb7e108ffeCfKsZEMsVLkoKq",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    }
+  }
+}
