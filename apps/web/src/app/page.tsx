@@ -66,7 +66,7 @@ export default async function Home() {
 							.
 						</p>
 					</div>
-					<div className="mt-8 flex flex-col gap-3 font-medium text-sm sm:flex-row">
+					<div className=" flex flex-col gap-3 font-medium text-sm sm:flex-row">
 						<a
 							className="flex h-10 w-full items-center justify-center gap-2 rounded-full bg-foreground px-4 text-background transition-colors hover:bg-[#383838] sm:w-36 dark:hover:bg-[#ccc]"
 							href={primaryHref}

@@ -56,8 +56,15 @@ export default function SignUpForm({
 	}
 
 	return (
-		<div className="mx-auto mt-10 w-full max-w-md p-6">
-			<h1 className="mb-6 text-center font-bold text-3xl">Create Account</h1>
+		<div className="mx-auto w-full max-w-md">
+			<div className="mb-6 space-y-2">
+				<h2 className="font-semibold text-xl text-zinc-950 tracking-tight dark:text-zinc-50">
+					Sign up
+				</h2>
+				<p className="text-sm text-zinc-600 dark:text-zinc-400">
+					Create a test account to verify the full auth flow.
+				</p>
+			</div>
 
 			<form
 				onSubmit={(e) => {
@@ -75,12 +82,17 @@ export default function SignUpForm({
 								<Input
 									id={field.name}
 									name={field.name}
+									autoComplete="name"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
+									className="rounded-full border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black"
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-red-500">
+									<p
+										key={error?.message}
+										className="text-red-600 text-sm dark:text-red-400"
+									>
 										{error?.message}
 									</p>
 								))}
@@ -98,12 +110,17 @@ export default function SignUpForm({
 									id={field.name}
 									name={field.name}
 									type="email"
+									autoComplete="email"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
+									className="rounded-full border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black"
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-red-500">
+									<p
+										key={error?.message}
+										className="text-red-600 text-sm dark:text-red-400"
+									>
 										{error?.message}
 									</p>
 								))}
@@ -121,12 +138,17 @@ export default function SignUpForm({
 									id={field.name}
 									name={field.name}
 									type="password"
+									autoComplete="new-password"
 									value={field.state.value}
 									onBlur={field.handleBlur}
 									onChange={(e) => field.handleChange(e.target.value)}
+									className="rounded-full border-zinc-200 bg-white dark:border-zinc-800 dark:bg-black"
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-red-500">
+									<p
+										key={error?.message}
+										className="text-red-600 text-sm dark:text-red-400"
+									>
 										{error?.message}
 									</p>
 								))}
@@ -144,7 +166,7 @@ export default function SignUpForm({
 					{({ canSubmit, isSubmitting }) => (
 						<Button
 							type="submit"
-							className="w-full"
+							className="h-10 w-full rounded-full"
 							disabled={!canSubmit || isSubmitting}
 						>
 							{isSubmitting ? "Submitting..." : "Sign Up"}
@@ -157,7 +179,7 @@ export default function SignUpForm({
 				<Button
 					variant="link"
 					onClick={onSwitchToSignIn}
-					className="text-indigo-600 hover:text-indigo-800"
+					className="h-auto px-0 text-zinc-600 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-zinc-50"
 				>
 					Already have an account? Sign In
 				</Button>
