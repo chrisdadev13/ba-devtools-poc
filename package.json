@@ -1,0 +1,41 @@
+{
+	"name": "better-auth-devtools",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"type": "module",
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"check-types": "turbo check-types",
+		"dev:web": "turbo -F web dev",
+		"db:push": "turbo -F @better-auth-devtools/db db:push",
+		"db:studio": "turbo -F @better-auth-devtools/db db:studio",
+		"db:generate": "turbo -F @better-auth-devtools/db db:generate",
+		"db:migrate": "turbo -F @better-auth-devtools/db db:migrate",
+		"check": "biome check --write .",
+		"prepare": "husky"
+	},
+	"dependencies": {
+		"@better-auth-devtools/env": "workspace:*",
+		"dotenv": "catalog:",
+		"zod": "catalog:"
+	},
+	"devDependencies": {
+		"@better-auth-devtools/config": "workspace:*",
+		"@biomejs/biome": "^2.2.0",
+		"@types/node": "^22.13.14",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.2",
+		"turbo": "^2.8.12",
+		"typescript": "catalog:"
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}": [
+			"biome check --write ."
+		]
+	},
+	"packageManager": "pnpm@10.23.0"
+}

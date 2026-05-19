@@ -1,0 +1,10 @@
+{
+	"extends": "@better-auth-devtools/config/tsconfig.react.json",
+	"compilerOptions": {
+		"paths": {
+			"@better-auth-devtools/ui/*": ["./src/*"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules"]
+}

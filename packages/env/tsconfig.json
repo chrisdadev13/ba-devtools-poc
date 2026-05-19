@@ -1,0 +1,3 @@
+{
+	"extends": "@better-auth-devtools/config/tsconfig.base.json"
+}
