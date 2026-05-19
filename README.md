@@ -1,100 +1,98 @@
-# better-auth-devtools
+# Better Auth Devtools
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines Next.js, Self, and more.
+A floating devtools panel for [Better Auth](https://better-auth.com). Inspect sessions, browse users, sign in as anyone, and manage preconfigured login links — all from a self-hosted UI.
 
-## Features
+## Status
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Biome** - Linting and formatting
-- **Husky** - Git hooks for code quality
-- **Turborepo** - Optimized monorepo build system
+This is a proof-of-concept. No npm packages are published yet — everything lives in this monorepo.
 
-## Getting Started
+## Install
 
-First, install the dependencies:
+Once published, the package will be:
 
-```bash
-pnpm install
+```sh
+npm install @better-auth-devtools/devtools
 ```
 
-## Database Setup
+Requires `better-auth` as a peer dependency.
 
-This project uses PostgreSQL with Drizzle ORM.
+## Setup
 
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/web/.env` file with your PostgreSQL connection details.
+### 1. Add the plugin to your auth instance
 
-3. Apply the schema to your database:
+```ts
+// packages/auth/src/index.ts
+import { betterAuthDevtools } from "@better-auth-devtools/devtools/plugin";
 
-```bash
-pnpm run db:push
+export function createAuth() {
+  return betterAuth({
+    database: drizzleAdapter(db, { provider: "pg", schema }),
+    plugins: [
+      betterAuthDevtools({
+        loginLinks: [
+          { key: "admin", label: "Admin", email: "admin@example.com", createIfMissing: true },
+          { key: "user", label: "Regular User", email: "user@example.com, createIfMissing: true },
+        ],
+      }),
+    ],
+  });
+}
 ```
 
-Then, run the development server:
+### 2. Mount the devtools UI component
 
-```bash
-pnpm run dev
-```
-
-Open [http://localhost:3001](http://localhost:3001) in your browser to see the fullstack application.
-
-## UI Customization
-
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
-
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
-
-### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
-
-Import shared components like this:
+Only render the devtools in non-production environments:
 
 ```tsx
-import { Button } from "@better-auth-devtools/ui/components/button";
+// apps/web/src/lib/auth-client.ts
+import { createAuthClient } from "better-auth/react";
+import { BetterAuthDevtools } from "@better-auth-devtools/devtools/components/better-auth-devtools";
+
+export const authClient = createAuthClient({});
+
+export function Devtools() {
+  if (process.env.NODE_ENV === "production") return null;
+  return <BetterAuthDevtools auth={authClient} />;
+}
 ```
 
-### Add app-specific blocks
+```tsx
+// apps/web/src/app/layout.tsx (or wherever your root layout is)
+import { authClient } from "@/lib/auth-client";
+import { Devtools } from "@/lib/auth-client";
 
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
-## Git Hooks and Formatting
-
-- Initialize hooks: `pnpm run prepare`
-- Format and lint fix: `pnpm run check`
-
-## Project Structure
-
-```
-better-auth-devtools/
-├── apps/
-│   └── web/         # Fullstack application (Next.js)
-├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        {children}
+        <Devtools />
+      </body>
+    </html>
+  );
+}
 ```
 
-## Available Scripts
+### 3. Disable in production
 
-- `pnpm run dev`: Start all applications in development mode
-- `pnpm run build`: Build all applications
-- `pnpm run dev:web`: Start only the web application
-- `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run db:push`: Push schema changes to database
-- `pnpm run db:generate`: Generate database client/types
-- `pnpm run db:migrate`: Run database migrations
-- `pnpm run db:studio`: Open database studio UI
-- `pnpm run check`: Run Biome formatting and linting
+Devtools are off by default in production. To force-disable:
+
+```ts
+betterAuthDevtools({ enabled: false })
+```
+
+Or set `NODE_ENV=production` on your server.
+
+## What you get
+
+- **Session inspector** — view the current session, user, and cookie state
+- **User browser** — list, search, and paginate users; sign in as any user with one click
+- **Login links** — preconfigured one-click sign-in links for test accounts
+- **Config viewer** — inspect your Better Auth setup (base URL, enabled features, plugin list, tables)
+
+Sensitive fields (passwords, tokens, secrets) are never exposed.
+
+## Packages
+
+- `@better-auth-devtools/devtools` — the plugin and UI components
+- `@better-auth-devtools/auth` — preconfigured auth instance with devtools and database adapter
