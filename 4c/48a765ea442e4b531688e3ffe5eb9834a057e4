@@ -1,0 +1,46 @@
+packages/devtools/src/plugin.ts
+  s_92e69236b4d58b::t_34d6466b1c91c6 85,197-201
+  s_92e69236b4d58b::t_ef65cf1a58fbaf 5,72
+  s_92e69236b4d58b::t_846bbafc77aaa8 11,14-15,53-71,73-84,98-106,112,134,139-196,202-253,257-266
+  s_92e69236b4d58b::t_1bb83874197223 254-256
+packages/devtools/src/components/better-auth-devtools.module.css
+  s_2549e77f8e56ec::t_d0cbae6fa4ee86 421-430,442-448,456-465
+  s_92e69236b4d58b::t_f2ae2ae972bb50 612-618
+packages/devtools/src/types.ts
+  s_92e69236b4d58b::t_c60e9465f5312d 9
+  s_92e69236b4d58b::t_846bbafc77aaa8 22-47
+packages/devtools/src/components/better-auth-devtools.tsx
+  s_92e69236b4d58b::t_d32f37400d401e 290-302,326-329,350
+  s_2549e77f8e56ec::t_38995f753f4fca 262-264
+  s_92e69236b4d58b::t_aedc0d9b1a02b6 807-824,828-878
+  s_92e69236b4d58b::t_1bb83874197223 825-827
+  s_92e69236b4d58b::t_5b2d1579c238e3 562-581
+  s_92e69236b4d58b::t_c60e9465f5312d 17,88
+  s_92e69236b4d58b::t_2111cebb09fe3a 650-655
+  s_2549e77f8e56ec::t_fcedaf9bc8f15a 63-84,212-218,224-234,238-261,265-275,603,700-707,1255-1256,1260-1261
+  s_92e69236b4d58b::t_c35190070e2a11 416-448
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.9",
+  "base_commit_sha": "4c48a765ea442e4b531688e3ffe5eb9834a057e4",
+  "prompts": {},
+  "sessions": {
+    "s_2549e77f8e56ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1bea068c5ffe7VvRT8uQS5H6Id",
+        "model": "gpt-5.5"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    },
+    "s_92e69236b4d58b": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1be9d1f0effe0SMqzPCi3ahi2e",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    }
+  }
+}
